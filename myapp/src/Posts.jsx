@@ -17,7 +17,11 @@ export function Posts() {
 
   // 구조분해 할당을 통해 데이터를 사용했다.
   // const { data } = useQuery("쿼리이름", 쿼리함수 = 쿼리 데이터를 가져오는 방법);
-  const { data } = useQuery("posts", fetchPosts);
+  const { data, isError, isLoading, error } = useQuery("posts", fetchPosts, {
+    staleTime: 2000,
+  });
+  if (isLoading) return <h3>로딩중</h3>;
+  if (isError) return <h3>잘못된 데이터 입니다. {error.toString()}</h3>;
 
   /**
    * fetchPosts가 해결될 때까지 데이터는 거짓이다.
