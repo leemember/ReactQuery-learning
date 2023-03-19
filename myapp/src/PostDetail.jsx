@@ -1,4 +1,5 @@
-import { useQuery } from "react-query";
+import { useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "react-query";
 
 async function fetchComments(postId) {
   const response = await fetch(
@@ -26,8 +27,20 @@ async function updatePost(postId) {
 export function PostDetail({ post }) {
   const { data, isLoading, isError, error } = useQuery(
     ["comments", post.id],
-    () => fetchComments(post.id)
+    () => fetchComments(post.id),
+    { keepPreviousData: true }
   );
+
+  useEffect(() => {
+    queryClient.prefetchQuery(["comments"], () => fetchComments());
+  }, []);
+
+  // 변이 함수의 경우
+  // 그 자체도 인수를 받을 수 있다.
+  const deleteMutation = useMutation((postId) => deletePost(postId));
+  const updateMutation = useMutation((postId) => updatePost(postId));
+
+  const queryClient = useQueryClient();
 
   if (isLoading) {
     return <h3>로딩중...</h3>;
@@ -45,7 +58,34 @@ export function PostDetail({ post }) {
   return (
     <>
       <h3 style={{ color: "blue" }}>{post.title}</h3>
-      <button>Delete</button> <button>Update title</button>
+      <button onClick={() => deleteMutation.mutate(post.id)}>Delete</button>
+      {deleteMutation.isError && (
+        <p style={{ color: "red" }}>Error deleting the post</p>
+      )}
+
+      {deleteMutation.isLoading && (
+        <p style={{ color: "red" }}>Deleting the post</p>
+      )}
+
+      {deleteMutation.isSuccess && (
+        <p style={{ color: "red" }}>Post has (not) been deleted</p>
+      )}
+
+      {updateMutation.isError && (
+        <p style={{ color: "red" }}>Error updating the post</p>
+      )}
+
+      {updateMutation.isLoading && (
+        <p style={{ color: "red" }}>updating the post</p>
+      )}
+
+      {updateMutation.isSuccess && (
+        <p style={{ color: "red" }}>Post has (not) been updated</p>
+      )}
+
+      <button onClick={() => updateMutation.mutate(post.id)}>
+        Update title
+      </button>
       <p>{post.body}</p>
       <h4>Comments</h4>
       {data.map((comment) => (
