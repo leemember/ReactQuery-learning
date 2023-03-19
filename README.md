@@ -4,6 +4,13 @@
 
 ---
 
+### repo
+
+```
+🗂 myapp --> 기초단계 (useQuery 사용법, prefetching, pagination)
+🗂 myapp_01 --> 무한 스크롤 (infinite-swapi)
+```
+
 현재는 ReactQuery 버전 4가 릴리스 되었다. 버전 4에서는 ReactQuery -> **TanStack Query** 라고 부른다.
 
 ### 📍 설치
